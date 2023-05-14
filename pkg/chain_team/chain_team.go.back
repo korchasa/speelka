@@ -1,0 +1,84 @@
+package chain_team
+
+import (
+    "fmt"
+    "github.com/korchasa/spilka/pkg/character"
+    "github.com/korchasa/spilka/pkg/types"
+    log "github.com/sirupsen/logrus"
+    "os"
+)
+
+type ChainTeam struct {
+    characters []*character.Character
+    history    []types.Action
+}
+
+func NewTeam(chars []*character.Character) *ChainTeam {
+    return &ChainTeam{
+        characters: chars,
+        history:    make([]types.Action, 0),
+    }
+}
+
+func (t *ChainTeam) ProcessMessage(to string, text string) error {
+    msg := &types.Message{
+        From: "user",
+        To:   to,
+        Text: text,
+    }
+    t.loop(msg)
+    return nil
+}
+
+func (t *ChainTeam) loop(msg *types.Message) {
+    for {
+        c, err := t.findCharacter(msg.To)
+        if err != nil {
+            log.Fatalf("failed to find character: %v", err)
+        }
+        resp, err := c.ProcessMessage(t)
+        if err != nil {
+            log.Fatalf("failed to process message: %v", err)
+        }
+        if resp == nil {
+            return
+        }
+        if resp.TellUser.Text != "" {
+            log.Infof("%s->user: %s", c.Name, resp.TellUser.Text)
+        }
+        if resp.Command.Name != "" && resp.Command.Name != "none" {
+            log.Infof("%s -> tool %s: %v", c.Name, resp.Command.Name, resp.Command.Arguments)
+            os.Exit(1)
+        }
+        if resp.TellTeamMember.Text != "" {
+            log.Infof("%s->%s: %s", c.Name, resp.TellTeamMember.To, resp.TellTeamMember.Text)
+            t.loop(&types.Message{
+                From: c.Name,
+                To:   resp.TellTeamMember.To,
+                Text: resp.TellTeamMember.Text,
+            })
+        }
+
+        //if act.Type() == "message" {
+        //    msg = act.Message()
+        //    log.Infof("message: %v", msg)
+        //    continue
+        //} else if act.Type() == "tool_request" {
+        //    tr := act.CommandRequest()
+        //    log.Infof("tool request: %v", tr)
+        //}
+    }
+}
+
+func (t *ChainTeam) Characters() []*character.Character {
+    return t.characters
+}
+
+func (t *ChainTeam) findCharacter(to string) (*character.Character, error) {
+    for _, c := range t.characters {
+        if c.Name == to {
+            return c, nil
+        }
+    }
+    return nil, fmt.Errorf("failed to find character: %s", to)
+}
