@@ -16,6 +16,16 @@ func (a *Action) TextHistory() (resp []string) {
     if a.ToTeam.Text != "" {
         resp = append(resp, fmt.Sprintf("%s: %s", a.ToTeam.From, a.ToTeam.Text))
     }
+    if a.ToUser.Text != "" {
+        resp = append(resp, fmt.Sprintf("%s(to User): %s", a.ToUser.From, a.ToUser.Text))
+    }
+    if a.Command.Name != "" {
+        var args []string
+        for _, arg := range a.Command.Arguments {
+            args = append(args, fmt.Sprintf("\"%s\": \"<%s>\"", arg.Name, arg.Description))
+        }
+        resp = append(resp, fmt.Sprintf("%s: call `%s`, arguments: %s", a.Command.Name, a.Command.Description, strings.Join(args, ", ")))
+    }
     return resp
 }
 

@@ -40,6 +40,8 @@ func (g *GPT) AskChatGPT(p string) (*types.Action, error) {
     content := resp.Choices[0].Message.Content
     content = strings.Trim(content, "`")
 
+    log.Debugf("Raw model response: %s", content)
+
     var msg types.Action
     err = json.Unmarshal([]byte(content), &msg)
     if err != nil {

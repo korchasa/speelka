@@ -23,12 +23,12 @@ func main() {
     team := roundrobin_team.NewTeam([]*character.Character{
         {
             Name:        "Speaky",
-            Role:        "I want you to act as a project manager and team lead",
+            Role:        "I want you to act as a project manager and team lead. Please discuss the problem with the team.",
             Description: "knows how to solve project problems and how to lead team",
         },
         {
             Name:        "Consi",
-            Role:        "I want you to act as a macos power user and senior admin",
+            Role:        "I want you to act as a macos power user and senior admin. Please discuss the problem with team.",
             Description: "can work with macos console",
             Commands: []types.Command{
                 {
@@ -45,12 +45,12 @@ func main() {
         },
         {
             Name:        "Charty",
-            Role:        "I want you to act as a senior frontend developer",
+            Role:        "I want you to act as a senior frontend developer. Please discuss the problem with team.",
             Description: "can build charts in html from given data",
         },
         {
             Name:        "Filly",
-            Role:        "I want you to act as a macos power user and senior admin",
+            Role:        "I want you to act as a file system commander. Please discuss the problem with team.",
             Description: "knows how to work with files",
             Commands: []types.Command{
                 {
@@ -71,7 +71,7 @@ func main() {
         },
         {
             Name:        "Crit",
-            Role:        "Now as a proofreader, Crit, your task is to read through the team discussion and identify any errors they made.",
+            Role:        "Now as a proofreader, your task is to read through the team discussion and identify any errors they made.",
             Description: "can find errors in the discussion",
         },
     })
