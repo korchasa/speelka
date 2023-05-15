@@ -2,8 +2,7 @@ package main
 
 import (
     "github.com/korchasa/spilka/pkg/character"
-    "github.com/korchasa/spilka/pkg/roundrobin_team"
-    "github.com/korchasa/spilka/pkg/types"
+    "github.com/korchasa/spilka/pkg/team"
     log "github.com/sirupsen/logrus"
     "os"
 )
@@ -20,21 +19,21 @@ func init() {
 }
 
 func main() {
-    team := roundrobin_team.NewTeam([]*character.Character{
+    team := team.NewTeam([]*character.Character{
         {
-            Name:        "Speaky",
-            Role:        "I want you to act as a project manager and team lead. Please discuss the problem with the team.",
+            Name:        "Leader",
+            Role:        "Leader, i want you to act as a team lead. Use the strengths of team members.",
             Description: "knows how to solve project problems and how to lead team",
         },
         {
-            Name:        "Consi",
-            Role:        "I want you to act as a macos power user and senior admin. Please discuss the problem with team.",
+            Name:        "Consolleri",
+            Role:        "Consolleri, i want you to act as a macos power user and senior admin.",
             Description: "can work with macos console",
-            Commands: []types.Command{
+            Commands: []character.Command{
                 {
                     Name:        "console",
                     Description: "knows how to work with the macos console",
-                    Arguments: []types.CommandArgument{
+                    Arguments: []character.CommandArgument{
                         {
                             Name:        "query",
                             Description: "console_command_to_execute",
@@ -44,19 +43,19 @@ func main() {
             },
         },
         {
-            Name:        "Charty",
-            Role:        "I want you to act as a senior frontend developer. Please discuss the problem with team.",
+            Name:        "Charter",
+            Role:        "Charter, i want you to act as a senior frontend developer.",
             Description: "can build charts in html from given data",
         },
         {
-            Name:        "Filly",
-            Role:        "I want you to act as a file system commander. Please discuss the problem with team.",
+            Name:        "Failler",
+            Role:        "Failler, i want you to act as a file system commander.",
             Description: "knows how to work with files",
-            Commands: []types.Command{
+            Commands: []character.Command{
                 {
                     Name:        "save_file",
                     Description: "save file",
-                    Arguments: []types.CommandArgument{
+                    Arguments: []character.CommandArgument{
                         {
                             Name:        "path",
                             Description: "file_path",
@@ -70,13 +69,13 @@ func main() {
             },
         },
         {
-            Name:        "Crit",
+            Name:        "Critic",
             Role:        "Now as a proofreader, your task is to read through the team discussion and identify any errors they made.",
             Description: "can find errors in the discussion",
         },
     })
 
-    err := team.Start("Construct a ring diagram of the memory occupied by the operating system processes")
+    err := team.Start("Construct a ring chart of the memory occupied by the 10 largest processes of the operating system")
     if err != nil {
         panic(err)
     }
