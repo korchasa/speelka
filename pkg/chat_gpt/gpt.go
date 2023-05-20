@@ -2,10 +2,11 @@ package chat_gpt
 
 import (
     "context"
-    "encoding/json"
     "fmt"
-    "github.com/korchasa/spilka/pkg/types"
+    "github.com/korchasa/spilka/pkg/chat_gpt/limiter"
+    logger "github.com/korchasa/spilka/pkg/chat_gpt/logger"
     "github.com/korchasa/spilka/pkg/utils"
+    "github.com/pelletier/go-toml/v2"
     "github.com/sashabaranov/go-openai"
     log "github.com/sirupsen/logrus"
     "strings"
@@ -16,39 +17,57 @@ var (
 )
 
 func init() {
-    GPTClient = NewGPT(openai.NewClient(utils.EnsureEnv("OPENAI_API_KEY")))
+    var err error
+    GPTClient, err = NewGPT(
+        openai.NewClient(utils.EnsureEnv("OPENAI_API_KEY")),
+        "./var/work.log",
+    )
+    if err != nil {
+        log.Error(err)
+    }
 }
 
 type GPT struct {
-    client *openai.Client
+    client  *openai.Client
+    limiter *limiter.SmartLimiter
+    logger  *logger.FileLogger
 }
 
-func (g *GPT) AskChatGPT(p string) (*types.Action, error) {
-    req := openai.ChatCompletionRequest{
-        Model: openai.GPT3Dot5Turbo,
-        Messages: []openai.ChatCompletionMessage{
-            {
-                Role:    openai.ChatMessageRoleUser,
-                Content: p,
-            },
-        },
-    }
-    resp, err := g.client.CreateChatCompletion(context.TODO(), req)
+func (g *GPT) AskChatGPT(prompt string) (string, error) {
+    req := &openai.ChatCompletionRequest{}
+    err := toml.Unmarshal([]byte(prompt), req)
     if err != nil {
-        panic(err)
+        return "", fmt.Errorf("failed to unmarshal toml: %v", err)
+    }
+    err = g.limiter.Limit(req)
+    if err != nil {
+        return "", fmt.Errorf("failed to limit: %w", err)
+    }
+    resp, err := g.client.CreateChatCompletion(context.TODO(), *req)
+    if err != nil {
+        log.Panic(err)
+    }
+    if err = g.logger.Log(req, &resp); err != nil {
+        log.Warnf("failed to log: %v", err)
     }
     content := resp.Choices[0].Message.Content
     content = strings.Trim(content, "`")
 
-    var msg types.Action
-    err = json.Unmarshal([]byte(content), &msg)
-    if err != nil {
-        log.Warnf("Raw model response: %s", content)
-        return nil, fmt.Errorf("failed to unmarshal model response: %w", err)
-    }
-    return &msg, nil
+    return content, nil
 }
 
-func NewGPT(client *openai.Client) *GPT {
-    return &GPT{client: client}
+func NewGPT(client *openai.Client, logPath string) (*GPT, error) {
+    logr, err := logger.NewFileLogger(logPath)
+    if err != nil {
+        return nil, fmt.Errorf("failed to create logger: %w", err)
+    }
+    lim, err := limiter.NewSmartLimiter(3000, 12000)
+    if err != nil {
+        return nil, fmt.Errorf("failed to create limiter: %w", err)
+    }
+    return &GPT{
+        client:  client,
+        logger:  logr,
+        limiter: lim,
+    }, nil
 }
