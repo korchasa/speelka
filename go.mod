@@ -6,11 +6,12 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/fatih/color v1.15.0
+	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/samber/go-gpt-3-encoder v0.3.1
 	github.com/sashabaranov/go-openai v1.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.2
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -36,5 +37,4 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

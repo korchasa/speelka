@@ -1,89 +1,63 @@
 package character
 
 import (
-	"fmt"
-	"github.com/fatih/color"
-	"github.com/korchasa/spilka/pkg/actions"
-	"github.com/korchasa/spilka/pkg/chat_gpt"
-	"regexp"
-	"strings"
+    "fmt"
+    "github.com/fatih/color"
+    "github.com/korchasa/spilka/pkg/actions"
+    "github.com/korchasa/spilka/pkg/answer_parser"
+    "github.com/korchasa/spilka/pkg/character/prompt"
+    "github.com/korchasa/spilka/pkg/chat_gpt"
 )
 
 type Character struct {
-	Name        string
-	Role        string
-	Description string
-	Commands    []actions.Command
-	Color       color.Attribute
+    Name            string
+    Role            string
+    Description     string
+    Commands        []actions.Command
+    Color           color.Attribute
+    promptGenerator *prompt.Generator
 }
 
-func (c *Character) ProcessMessage(problem string, prompt string, history []actions.Action) (acts []actions.Action, err error) {
-	resp, err := chat_gpt.GPTClient.AskChatGPT(c.Name, c.Role, problem, prompt, history)
-	if err != nil {
-		return nil, fmt.Errorf("failed to ask chat gpt: %v", err)
-	}
-
-	acts = append(acts, &actions.TeamMessage{
-		From: c.Name,
-		Text: removeCharacterPrefix(c.Name, resp),
-	})
-
-	for _, call := range extractCommandCalls(resp) {
-		call.From = c.Name
-		acts = append(acts, &call)
-	}
-
-	for _, question := range extractUserQuestions(resp) {
-		question.From = c.Name
-		acts = append(acts, &question)
-	}
-
-	return acts, nil
+func (c *Character) Init() error {
+    gen, err := prompt.NewGenerator()
+    if err != nil {
+        return fmt.Errorf("failed to create prompt generator: %v", err)
+    }
+    c.promptGenerator = gen
+    return nil
 }
 
-func removeCharacterPrefix(name string, resp string) string {
-	if strings.HasPrefix(resp, name) {
-		return strings.TrimPrefix(resp, name+":")
-	}
-	return resp
+func (c *Character) Respond(problem string, teamChars []*Character, history []actions.Action) (acts []actions.Action, err error) {
+    req, err := c.prompt(problem, teamChars, history)
+    if err != nil {
+        return nil, err
+    }
+    resp, err := chat_gpt.GPTClient.AskChatGPT(req)
+    if err != nil {
+        return nil, fmt.Errorf("failed to ask chat gpt: %v", err)
+    }
+
+    acts = answer_parser.NewTextParser().Parse(c.Name, resp)
+    return acts, nil
 }
 
-func extractCommandCalls(text string) []actions.CommandCall {
-	var commandCalls []actions.CommandCall
-
-	// Match @call command key="value" pattern
-	regex := regexp.MustCompile(`@call\s+(\w+)\s*((?:\w+=['"][^"^']+['"]\s*)*)\s*`)
-	matches := regex.FindAllStringSubmatch(text, -1)
-
-	for _, match := range matches {
-		commandCall := actions.CommandCall{
-			CommandName: match[1],
-			Arguments:   make(map[string]string),
-		}
-
-		// Match key="value" pattern within the command arguments
-		argRegex := regexp.MustCompile(`(\w+)=['"]([^'^"]+)['"]`)
-		argMatches := argRegex.FindAllStringSubmatch(match[2], -1)
-
-		for _, argMatch := range argMatches {
-			commandCall.Arguments[argMatch[1]] = argMatch[2]
-		}
-
-		commandCalls = append(commandCalls, commandCall)
-	}
-
-	return commandCalls
+func (c *Character) prompt(problem string, chars []*Character, history []actions.Action) (string, error) {
+    var team []*prompt.CharacterSpec
+    for _, ch := range chars {
+        team = append(team, ch.viewSpec())
+    }
+    p, err := c.promptGenerator.GeneratePrompt(problem, c.viewSpec(), team, history)
+    if err != nil {
+        return "", fmt.Errorf("failed to generate prompt: %v", err)
+    }
+    return p, nil
 }
 
-func extractUserQuestions(resp string) (calls []actions.UserQuestion) {
-	re := regexp.MustCompile(`@ask[,\s](.+)$`)
-	for _, sub := range strings.Split(resp, "\n") {
-		matches := re.FindAllStringSubmatch(sub, -1)
-		for _, match := range matches {
-			calls = append(calls, actions.UserQuestion{
-				Question: strings.Trim(match[1], ", "),
-			})
-		}
-	}
-	return calls
+func (c *Character) viewSpec() *prompt.CharacterSpec {
+    return &prompt.CharacterSpec{
+        Name:        c.Name,
+        Role:        c.Role,
+        Description: c.Description,
+        Commands:    c.Commands,
+    }
 }
