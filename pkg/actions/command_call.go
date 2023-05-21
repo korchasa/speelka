@@ -38,10 +38,8 @@ func (c *CommandCall) Call() *CommandResult {
     switch c.CommandName {
     case "console":
         callConsole(c, resp)
-        break
     case "save_file":
         saveFile(c, c.Arguments["filename"], c.Arguments["content"], resp)
-        break
     }
 
     return resp
@@ -58,7 +56,7 @@ func callConsole(c *CommandCall, resp *CommandResult) {
     resp.Output = limitStringLength(outb.String(), 500)
     resp.Errors += limitStringLength(errb.String(), 500)
     if exitErr, ok := err.(*exec.ExitError); ok {
-        resp.Errors += fmt.Sprintf("command failed: exit code `%d`:%s", exitErr.ExitCode())
+        resp.Errors += fmt.Sprintf("command failed: exit code `%d`", exitErr.ExitCode())
     } else if err != nil {
         log.Warnf("Error running command: %s", err)
     } else {

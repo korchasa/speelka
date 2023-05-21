@@ -12,7 +12,6 @@ import (
 type Team struct {
     chars   []*character.Character
     history []actions.Action
-    problem string
     ui      *ui.Console
 }
 
@@ -81,15 +80,6 @@ func (t *Team) characterTurn(problem string, character *character.Character) {
             log.Warn("nil action")
         }
     }
-}
-
-func (t *Team) findCharacter(to string) (*character.Character, error) {
-    for _, c := range t.chars {
-        if c.Name == to {
-            return c, nil
-        }
-    }
-    return nil, fmt.Errorf("failed to find character: %s", to)
 }
 
 func (t *Team) Characters() []*character.Character {
