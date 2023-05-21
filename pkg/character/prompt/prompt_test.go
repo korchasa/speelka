@@ -39,7 +39,7 @@ func TestGenerator_GeneratePrompt(t *testing.T) {
         },
     }
 
-    prompt, err := g.GeneratePrompt("Solve the problem", char, team, history)
+    prompt, err := g.Prompt("Solve the problem", char, team, history)
     assert.NoError(t, err)
     assert.Equal(t, "Solve the problem Hero Sidekick Answer", prompt)
 }

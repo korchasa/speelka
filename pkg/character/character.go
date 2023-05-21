@@ -9,6 +9,8 @@ import (
     "github.com/korchasa/spilka/pkg/chat_gpt"
 )
 
+const templatePath = "./pkg/character/character.toml.gotpl"
+
 type Character struct {
     Name            string
     Role            string
@@ -19,7 +21,7 @@ type Character struct {
 }
 
 func (c *Character) Init() error {
-    gen, err := prompt.NewGenerator()
+    gen, err := prompt.NewGenerator(templatePath)
     if err != nil {
         return fmt.Errorf("failed to create prompt generator: %v", err)
     }
@@ -42,22 +44,20 @@ func (c *Character) Respond(problem string, teamChars []*Character, history []ac
 }
 
 func (c *Character) prompt(problem string, chars []*Character, history []actions.Action) (string, error) {
-    var team []*prompt.CharacterSpec
-    for _, ch := range chars {
-        team = append(team, ch.viewSpec())
+    view := struct {
+        Problem        string
+        Character      *Character
+        TeamCharacters []*Character
+        History        []actions.Action
+    }{
+        Problem:        problem,
+        Character:      c,
+        TeamCharacters: chars,
+        History:        history,
     }
-    p, err := c.promptGenerator.GeneratePrompt(problem, c.viewSpec(), team, history)
+    p, err := c.promptGenerator.Prompt(view)
     if err != nil {
         return "", fmt.Errorf("failed to generate prompt: %v", err)
     }
     return p, nil
-}
-
-func (c *Character) viewSpec() *prompt.CharacterSpec {
-    return &prompt.CharacterSpec{
-        Name:        c.Name,
-        Role:        c.Role,
-        Description: c.Description,
-        Commands:    c.Commands,
-    }
 }
