@@ -2,7 +2,6 @@ package team
 
 import (
     "fmt"
-    "github.com/fatih/color"
     "github.com/korchasa/spilka/pkg/actions"
     "github.com/korchasa/spilka/pkg/character"
     "github.com/korchasa/spilka/pkg/ui"
@@ -10,12 +9,12 @@ import (
 )
 
 type Team struct {
-    chars   []*character.Character
+    chars   []character.Character
     history []actions.Action
     ui      *ui.Console
 }
 
-func NewTeam(chars []*character.Character, uin *ui.Console) *Team {
+func NewTeam(chars []character.Character, uin *ui.Console) *Team {
     return &Team{
         history: make([]actions.Action, 0),
         ui:      uin,
@@ -26,7 +25,7 @@ func NewTeam(chars []*character.Character, uin *ui.Console) *Team {
 func (t *Team) Start(problem string) error {
     for _, c := range t.chars {
         if err := c.Init(); err != nil {
-            return fmt.Errorf("failed to init character %s: %v", c.Name, err)
+            return fmt.Errorf("failed to init character %s: %v", c.Name(), err)
         }
     }
     t.loop(problem)
@@ -41,29 +40,29 @@ func (t *Team) loop(problem string) {
     }
 }
 
-func (t *Team) characterTurn(problem string, character *character.Character) {
+func (t *Team) characterTurn(problem string, character character.Character) {
     acts, err := character.Respond(problem, t.Characters(), t.history)
     if err != nil {
         log.Fatalf("failed to process message: %v", err)
     }
     for _, act := range acts {
+        fmt.Println(act.Log())
         t.AddToHistory(act)
         switch x := act.(type) {
-        case *actions.TeamMessage:
-            _, _ = color.New(character.Color).Println(act.Log())
-        case *actions.CommandCall:
+        case *actions.Message:
+            t.AddToHistory(x)
+        case *actions.CommandRequest:
             run, err := t.ui.Confirmation(fmt.Sprintf("Execute `%v`?", x.Log()))
             if err != nil {
                 log.Error(err)
                 continue
             }
-            if !run {
-                continue
+            if run {
+                resp := character.RunCommand(x)
+                t.AddToHistory(resp)
+                log.Warn(resp.Log())
+                t.characterTurn(problem, character)
             }
-            resp := x.Call()
-            t.AddToHistory(resp)
-            log.Warn(resp.Log())
-            t.characterTurn(problem, character)
         case *actions.UserQuestion:
             answer, err := t.ui.Question(x.Question)
             if err != nil {
@@ -82,7 +81,7 @@ func (t *Team) characterTurn(problem string, character *character.Character) {
     }
 }
 
-func (t *Team) Characters() []*character.Character {
+func (t *Team) Characters() []character.Character {
     return t.chars
 }
 

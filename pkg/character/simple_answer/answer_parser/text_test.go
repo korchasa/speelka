@@ -10,14 +10,14 @@ func TestExtractCommandCalls(t *testing.T) {
     tests := []struct {
         name          string
         text          string
-        expectedCalls []actions.CommandCall
+        expectedCalls []actions.CommandRequest
     }{
         {
             name: "SingleCommandCall",
             text: `some text.
             @call console query="memory usage"
             some text`,
-            expectedCalls: []actions.CommandCall{
+            expectedCalls: []actions.CommandRequest{
                 {
                     CommandName: "console",
                     Arguments: map[string]string{
@@ -31,7 +31,7 @@ func TestExtractCommandCalls(t *testing.T) {
             text: `- user: hello
 - @call console query="memory usage of operating system processes in macOS"
 - @call save_file path="/path/to/memory.csv" content="memory usage data extracted from activity monitor"`,
-            expectedCalls: []actions.CommandCall{
+            expectedCalls: []actions.CommandRequest{
                 {
                     CommandName: "console",
                     Arguments: map[string]string{
@@ -52,7 +52,7 @@ func TestExtractCommandCalls(t *testing.T) {
             text: `some text
 - @call console query='memory usage of operating system processes in macOS'
 - @call save_file path='/path/to/memory.csv' content='memory usage data extracted from activity monitor'`,
-            expectedCalls: []actions.CommandCall{
+            expectedCalls: []actions.CommandRequest{
                 {
                     CommandName: "console",
                     Arguments: map[string]string{
@@ -71,7 +71,7 @@ func TestExtractCommandCalls(t *testing.T) {
         {
             name: "ComplexCommand",
             text: "some text `@call console query='top -l 1 -o MEM | head -n 11 | tail -n 10 | awk '{print \"<tr><td>\" $1 \"</td><td>\" $11 \"</td></tr>\"}'`",
-            expectedCalls: []actions.CommandCall{
+            expectedCalls: []actions.CommandRequest{
                 {
                     CommandName: "console",
                     Arguments: map[string]string{
