@@ -42,7 +42,7 @@ Content = "{{.Character.Name}}, what is you first turn?"
 
 {{ range .History }}
 
-{{ if eq .Type "team_message" }}
+{{ if eq .Type "message" }}
 [[messages]]
 Role = "system"
 Name = "{{.From}}"
@@ -57,7 +57,7 @@ Content = """
 {{.Answer}}
 """
 
-{{ else if eq .Type "command_result" }}
+{{ else if eq .Type "command_response" }}
 [[messages]]
 Role = "system"
 Content = """

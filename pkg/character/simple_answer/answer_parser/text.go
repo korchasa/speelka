@@ -1,6 +1,7 @@
 package answer_parser
 
 import (
+    "github.com/fatih/color"
     "github.com/korchasa/spilka/pkg/actions"
     "regexp"
     "strings"
@@ -13,11 +14,12 @@ func NewTextParser() *TextParser {
     return &TextParser{}
 }
 
-func (t *TextParser) Parse(from string, modelAnswer string) []actions.Action {
+func (t *TextParser) Parse(from string, color color.Attribute, modelAnswer string) []actions.Action {
     var acts []actions.Action
-    acts = append(acts, &actions.TeamMessage{
-        From: from,
-        Text: removeCharacterPrefix(from, modelAnswer),
+    acts = append(acts, &actions.Message{
+        From:  from,
+        Text:  removeCharacterPrefix(from, modelAnswer),
+        Color: color,
     })
 
     for _, call := range extractCommandCalls(modelAnswer) {
@@ -39,15 +41,15 @@ func removeCharacterPrefix(name string, resp string) string {
     return resp
 }
 
-func extractCommandCalls(text string) []actions.CommandCall {
-    var commandCalls []actions.CommandCall
+func extractCommandCalls(text string) []actions.CommandRequest {
+    var commandCalls []actions.CommandRequest
 
     // Match @call command key="value" pattern
     regex := regexp.MustCompile(`@call\s+(\w+)\s*((?:\w+=['"][^"^']+['"]\s*)*)\s*`)
     matches := regex.FindAllStringSubmatch(text, -1)
 
     for _, match := range matches {
-        commandCall := actions.CommandCall{
+        commandCall := actions.CommandRequest{
             CommandName: match[1],
             Arguments:   make(map[string]string),
         }
