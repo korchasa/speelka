@@ -2,7 +2,7 @@ package limiter
 
 import (
     "fmt"
-    "github.com/korchasa/spilka/pkg/chat_gpt/tokens_counter"
+    "github.com/korchasa/speelka/pkg/chat_gpt/tokens_counter"
     "github.com/sashabaranov/go-openai"
 )
 

@@ -110,8 +110,8 @@ func TestExtractUserQuestions(t *testing.T) {
     }
 
     for i, question := range result {
-        if question.Question != expected[i].Question {
-            t.Errorf("Expected question '%s', but got '%s'", expected[i].Question, question.Question)
+        if question != expected[i].Question {
+            t.Errorf("Expected question '%s', but got '%s'", expected[i].Question, question)
         }
     }
 }

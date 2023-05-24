@@ -4,7 +4,7 @@ import (
     "bytes"
     "context"
     "fmt"
-    "github.com/korchasa/spilka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/actions"
     log "github.com/sirupsen/logrus"
     "os/exec"
     "strings"

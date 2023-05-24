@@ -3,12 +3,12 @@ package simple_answer
 import (
     "fmt"
     "github.com/fatih/color"
-    "github.com/korchasa/spilka/pkg/actions"
-    "github.com/korchasa/spilka/pkg/character"
-    "github.com/korchasa/spilka/pkg/character/prompt"
-    "github.com/korchasa/spilka/pkg/character/simple_answer/answer_parser"
-    "github.com/korchasa/spilka/pkg/chat_gpt"
-    "github.com/korchasa/spilka/pkg/command"
+    "github.com/korchasa/speelka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/character"
+    "github.com/korchasa/speelka/pkg/character/prompt"
+    "github.com/korchasa/speelka/pkg/character/simple_answer/answer_parser"
+    "github.com/korchasa/speelka/pkg/chat_gpt"
+    "github.com/korchasa/speelka/pkg/command"
 )
 
 const templatePath = "./pkg/character/simple_answer/character.toml.gotpl"

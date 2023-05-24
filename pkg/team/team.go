@@ -2,9 +2,9 @@ package team
 
 import (
     "fmt"
-    "github.com/korchasa/spilka/pkg/actions"
-    "github.com/korchasa/spilka/pkg/character"
-    "github.com/korchasa/spilka/pkg/ui"
+    "github.com/korchasa/speelka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/character"
+    "github.com/korchasa/speelka/pkg/ui"
     log "github.com/sirupsen/logrus"
 )
 

@@ -3,9 +3,9 @@ package chat_gpt
 import (
     "context"
     "fmt"
-    "github.com/korchasa/spilka/pkg/chat_gpt/limiter"
-    logger "github.com/korchasa/spilka/pkg/chat_gpt/logger"
-    "github.com/korchasa/spilka/pkg/utils"
+    "github.com/korchasa/speelka/pkg/chat_gpt/limiter"
+    logger "github.com/korchasa/speelka/pkg/chat_gpt/logger"
+    "github.com/korchasa/speelka/pkg/utils"
     "github.com/pelletier/go-toml/v2"
     "github.com/sashabaranov/go-openai"
     log "github.com/sirupsen/logrus"

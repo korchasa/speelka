@@ -2,8 +2,8 @@ package character
 
 import (
     "github.com/fatih/color"
-    "github.com/korchasa/spilka/pkg/actions"
-    "github.com/korchasa/spilka/pkg/command"
+    "github.com/korchasa/speelka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/command"
 )
 
 type Character interface {

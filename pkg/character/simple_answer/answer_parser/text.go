@@ -2,7 +2,7 @@ package answer_parser
 
 import (
     "github.com/fatih/color"
-    "github.com/korchasa/spilka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/actions"
     "regexp"
     "strings"
 )

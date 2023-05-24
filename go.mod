@@ -1,4 +1,4 @@
-module github.com/korchasa/spilka
+module github.com/korchasa/speelka
 
 go 1.20
 

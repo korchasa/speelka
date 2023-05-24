@@ -2,11 +2,11 @@ package main
 
 import (
     "github.com/fatih/color"
-    "github.com/korchasa/spilka/pkg/character"
-    "github.com/korchasa/spilka/pkg/character/simple_answer"
-    "github.com/korchasa/spilka/pkg/command"
-    "github.com/korchasa/spilka/pkg/team"
-    "github.com/korchasa/spilka/pkg/ui"
+    "github.com/korchasa/speelka/pkg/character"
+    "github.com/korchasa/speelka/pkg/character/simple_answer"
+    "github.com/korchasa/speelka/pkg/command"
+    "github.com/korchasa/speelka/pkg/team"
+    "github.com/korchasa/speelka/pkg/ui"
     log "github.com/sirupsen/logrus"
     "os"
 )

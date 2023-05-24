@@ -1,7 +1,7 @@
 package command
 
 import (
-    "github.com/korchasa/spilka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/actions"
 )
 
 type CommonCommand struct {
