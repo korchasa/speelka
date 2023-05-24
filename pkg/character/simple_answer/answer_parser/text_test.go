@@ -1,25 +1,25 @@
 package answer_parser
 
 import (
-    "github.com/korchasa/spilka/pkg/actions"
+    "github.com/korchasa/speelka/pkg/actions"
     "reflect"
     "testing"
 )
 
-func TestExtractCommandCalls(t *testing.T) {
+func TestExtractToolCalls(t *testing.T) {
     tests := []struct {
         name          string
         text          string
-        expectedCalls []actions.CommandRequest
+        expectedCalls []actions.ToolRequest
     }{
         {
-            name: "SingleCommandCall",
+            name: "SingleToolCall",
             text: `some text.
             @call console query="memory usage"
             some text`,
-            expectedCalls: []actions.CommandRequest{
+            expectedCalls: []actions.ToolRequest{
                 {
-                    CommandName: "console",
+                    ToolName: "console",
                     Arguments: map[string]string{
                         "query": "memory usage",
                     },
@@ -27,19 +27,19 @@ func TestExtractCommandCalls(t *testing.T) {
             },
         },
         {
-            name: "MultipleCommandCalls",
+            name: "MultipleToolCalls",
             text: `- user: hello
 - @call console query="memory usage of operating system processes in macOS"
 - @call save_file path="/path/to/memory.csv" content="memory usage data extracted from activity monitor"`,
-            expectedCalls: []actions.CommandRequest{
+            expectedCalls: []actions.ToolRequest{
                 {
-                    CommandName: "console",
+                    ToolName: "console",
                     Arguments: map[string]string{
                         "query": "memory usage of operating system processes in macOS",
                     },
                 },
                 {
-                    CommandName: "save_file",
+                    ToolName: "save_file",
                     Arguments: map[string]string{
                         "path":    "/path/to/memory.csv",
                         "content": "memory usage data extracted from activity monitor",
@@ -48,19 +48,19 @@ func TestExtractCommandCalls(t *testing.T) {
             },
         },
         {
-            name: "MultipleCommandCallsSingleQuote",
+            name: "MultipleToolCallsSingleQuote",
             text: `some text
 - @call console query='memory usage of operating system processes in macOS'
 - @call save_file path='/path/to/memory.csv' content='memory usage data extracted from activity monitor'`,
-            expectedCalls: []actions.CommandRequest{
+            expectedCalls: []actions.ToolRequest{
                 {
-                    CommandName: "console",
+                    ToolName: "console",
                     Arguments: map[string]string{
                         "query": "memory usage of operating system processes in macOS",
                     },
                 },
                 {
-                    CommandName: "save_file",
+                    ToolName: "save_file",
                     Arguments: map[string]string{
                         "path":    "/path/to/memory.csv",
                         "content": "memory usage data extracted from activity monitor",
@@ -69,11 +69,11 @@ func TestExtractCommandCalls(t *testing.T) {
             },
         },
         {
-            name: "ComplexCommand",
+            name: "ComplexTool",
             text: "some text `@call console query='top -l 1 -o MEM | head -n 11 | tail -n 10 | awk '{print \"<tr><td>\" $1 \"</td><td>\" $11 \"</td></tr>\"}'`",
-            expectedCalls: []actions.CommandRequest{
+            expectedCalls: []actions.ToolRequest{
                 {
-                    CommandName: "console",
+                    ToolName: "console",
                     Arguments: map[string]string{
                         "query": "top -l 1 -o MEM | head -n 11 | tail -n 10 | awk '{print \"<tr><td>\" $1 \"</td><td>\" $11 \"</td></tr>\"}'",
                     },
@@ -84,10 +84,10 @@ func TestExtractCommandCalls(t *testing.T) {
 
     for _, test := range tests {
         t.Run(test.name, func(t *testing.T) {
-            result := extractCommandCalls(test.text)
+            result := extractToolCalls(test.text)
 
             if !reflect.DeepEqual(result, test.expectedCalls) {
-                t.Errorf("extractCommandCalls() failed: expected %v, got %v", test.expectedCalls, result)
+                t.Errorf("extractToolCalls() failed: expected %v, got %v", test.expectedCalls, result)
             }
         })
     }
@@ -110,7 +110,7 @@ func TestExtractUserQuestions(t *testing.T) {
     }
 
     for i, question := range result {
-        if question != expected[i].Question {
+        if question.Question != expected[i].Question {
             t.Errorf("Expected question '%s', but got '%s'", expected[i].Question, question)
         }
     }

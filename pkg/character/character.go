@@ -3,7 +3,7 @@ package character
 import (
     "github.com/fatih/color"
     "github.com/korchasa/speelka/pkg/actions"
-    "github.com/korchasa/speelka/pkg/command"
+    "github.com/korchasa/speelka/pkg/tool"
 )
 
 type Character interface {
@@ -13,6 +13,6 @@ type Character interface {
     Description() string
     Role() string
     Color() color.Attribute
-    Commands() []command.Command
-    RunCommand(req *actions.CommandRequest) *actions.CommandResponse
+    Tools() []tool.Tool
+    RunTool(req *actions.ToolRequest) *actions.ToolResponse
 }

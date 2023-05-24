@@ -8,7 +8,7 @@ import (
     "github.com/korchasa/speelka/pkg/character/prompt"
     "github.com/korchasa/speelka/pkg/character/simple_answer/answer_parser"
     "github.com/korchasa/speelka/pkg/chat_gpt"
-    "github.com/korchasa/speelka/pkg/command"
+    "github.com/korchasa/speelka/pkg/tool"
 )
 
 const templatePath = "./pkg/character/simple_answer/character.toml.gotpl"
@@ -17,20 +17,20 @@ type Character struct {
     name            string
     role            string
     description     string
-    commands        []command.Command
+    tools           []tool.Tool
     color           color.Attribute
     promptGenerator *prompt.Generator
 }
 
-func NewSimpleFormat(name string, description string, role string, textColor color.Attribute, commands []command.Command) character.Character {
-    if commands == nil {
-        commands = make([]command.Command, 0)
+func NewSimpleFormat(name string, description string, role string, textColor color.Attribute, tools []tool.Tool) character.Character {
+    if tools == nil {
+        tools = make([]tool.Tool, 0)
     }
     return &Character{
         name:        name,
         role:        role,
         description: description,
-        commands:    commands,
+        tools:       tools,
         color:       textColor,
     }
 }
@@ -51,8 +51,8 @@ func (c *Character) Color() color.Attribute {
     return c.color
 }
 
-func (c *Character) Commands() []command.Command {
-    return c.commands
+func (c *Character) Tools() []tool.Tool {
+    return c.tools
 }
 
 func (c *Character) Init() error {
@@ -96,15 +96,15 @@ func (c *Character) prompt(problem string, chars []character.Character, history 
     return p, nil
 }
 
-func (c *Character) RunCommand(req *actions.CommandRequest) *actions.CommandResponse {
-    for _, cmd := range c.commands {
-        if cmd.Name() == req.CommandName {
+func (c *Character) RunTool(req *actions.ToolRequest) *actions.ToolResponse {
+    for _, cmd := range c.tools {
+        if cmd.Name() == req.ToolName {
             return cmd.Call(req)
         }
     }
-    return &actions.CommandResponse{
+    return &actions.ToolResponse{
         Request: req,
         Success: false,
-        Errors:  fmt.Sprintf("command `%s` not found", req.CommandName),
+        Errors:  fmt.Sprintf("tool `%s` not found", req.ToolName),
     }
 }

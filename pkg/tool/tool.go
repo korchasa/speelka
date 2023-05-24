@@ -1,20 +1,20 @@
-package command
+package tool
 
 import (
     "github.com/korchasa/speelka/pkg/actions"
 )
 
-type CommonCommand struct {
+type CommonTool struct {
     Name        string
     Description string
     Arguments   []Argument
 }
 
-type Command interface {
+type Tool interface {
     Name() string
     Description() string
     Arguments() []Argument
-    Call(r *actions.CommandRequest) *actions.CommandResponse
+    Call(r *actions.ToolRequest) *actions.ToolResponse
     String() string
 }
 
@@ -23,7 +23,7 @@ type Argument struct {
     Description string `json:"description" yaml:"description,omitempty"`
 }
 
-//func (t *Command) String() string {
+//func (t *Tool) String() string {
 //    var args []string
 //    for _, arg := range t.Arguments {
 //        args = append(args, fmt.Sprintf("%s='<%s>'", arg.Name, arg.Description))

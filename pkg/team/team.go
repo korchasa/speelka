@@ -51,14 +51,14 @@ func (t *Team) characterTurn(problem string, character character.Character) {
         switch x := act.(type) {
         case *actions.Message:
             t.AddToHistory(x)
-        case *actions.CommandRequest:
+        case *actions.ToolRequest:
             run, err := t.ui.Confirmation(fmt.Sprintf("Execute `%v`?", x.Log()))
             if err != nil {
                 log.Error(err)
                 continue
             }
             if run {
-                resp := character.RunCommand(x)
+                resp := character.RunTool(x)
                 t.AddToHistory(resp)
                 log.Warn(resp.Log())
                 t.characterTurn(problem, character)

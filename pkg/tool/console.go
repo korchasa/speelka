@@ -1,4 +1,4 @@
-package command
+package tool
 
 import (
     "bytes"
@@ -45,8 +45,8 @@ func (c *Console) String() string {
     return fmt.Sprintf("@call %s %s - %s", c.Name(), strings.Join(parts, " "), c.Description())
 }
 
-func (c *Console) Call(r *actions.CommandRequest) *actions.CommandResponse {
-    resp := &actions.CommandResponse{
+func (c *Console) Call(r *actions.ToolRequest) *actions.ToolResponse {
+    resp := &actions.ToolResponse{
         Request: r,
     }
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -61,7 +61,7 @@ func (c *Console) Call(r *actions.CommandRequest) *actions.CommandResponse {
     if exitErr, ok := err.(*exec.ExitError); ok {
         resp.Errors += fmt.Sprintf("command failed: exit code `%d`", exitErr.ExitCode())
     } else if err != nil {
-        log.Warnf("Error running command: %s", err)
+        log.Warnf("Error running tool: %s", err)
     } else {
         resp.Success = true
     }

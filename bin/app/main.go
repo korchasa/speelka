@@ -4,8 +4,8 @@ import (
     "github.com/fatih/color"
     "github.com/korchasa/speelka/pkg/character"
     "github.com/korchasa/speelka/pkg/character/simple_answer"
-    "github.com/korchasa/speelka/pkg/command"
     "github.com/korchasa/speelka/pkg/team"
+    "github.com/korchasa/speelka/pkg/tool"
     "github.com/korchasa/speelka/pkg/ui"
     log "github.com/sirupsen/logrus"
     "os"
@@ -37,8 +37,8 @@ func main() {
             "skilled in working with the operation system utilities",
             "I want you to act as an experienced macos user who knows how to work the console.",
             color.FgHiBlue,
-            []command.Command{
-                command.NewConsole(),
+            []tool.Tool{
+                tool.NewConsole(),
             },
         ),
         simple_answer.NewSimpleFormat(
@@ -53,7 +53,7 @@ func main() {
         //    Role:        "I want you to act as a file system commander.",
         //    Description: "knows how to work with files",
         //    Color:       color.FgYellow,
-        //    Commands: []actions.Command{
+        //    Tools: []actions.Tool{
         //        {
         //            Name:        "save_file",
         //            Description: "save file",

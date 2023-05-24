@@ -22,7 +22,7 @@ func (t *TextParser) Parse(from string, color color.Attribute, modelAnswer strin
         Color: color,
     })
 
-    for _, call := range extractCommandCalls(modelAnswer) {
+    for _, call := range extractToolCalls(modelAnswer) {
         call.From = from
         acts = append(acts, &call)
     }
@@ -41,31 +41,31 @@ func removeCharacterPrefix(name string, resp string) string {
     return resp
 }
 
-func extractCommandCalls(text string) []actions.CommandRequest {
-    var commandCalls []actions.CommandRequest
+func extractToolCalls(text string) []actions.ToolRequest {
+    var toolCalls []actions.ToolRequest
 
-    // Match @call command key="value" pattern
+    // Match @call tool key="value" pattern
     regex := regexp.MustCompile(`@call\s+(\w+)\s*((?:\w+=['"][^"^']+['"]\s*)*)\s*`)
     matches := regex.FindAllStringSubmatch(text, -1)
 
     for _, match := range matches {
-        commandCall := actions.CommandRequest{
-            CommandName: match[1],
-            Arguments:   make(map[string]string),
+        toolRequest := actions.ToolRequest{
+            ToolName:  match[1],
+            Arguments: make(map[string]string),
         }
 
-        // Match key="value" pattern within the command arguments
+        // Match key="value" pattern within the tool arguments
         argRegex := regexp.MustCompile(`(\w+)=['"]([^'^"]+)['"]`)
         argMatches := argRegex.FindAllStringSubmatch(match[2], -1)
 
         for _, argMatch := range argMatches {
-            commandCall.Arguments[argMatch[1]] = argMatch[2]
+            toolRequest.Arguments[argMatch[1]] = argMatch[2]
         }
 
-        commandCalls = append(commandCalls, commandCall)
+        toolCalls = append(toolCalls, toolRequest)
     }
 
-    return commandCalls
+    return toolCalls
 }
 
 func extractUserQuestions(resp string) (calls []actions.UserQuestion) {
