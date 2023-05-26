@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -e
-go build -o ./speelka ./bin/app/
+go build -o ./var/memory_chart ./bin/memory_chart/
 source .env
-./speelka
+./var/memory_chart

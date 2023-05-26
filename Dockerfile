@@ -8,7 +8,7 @@ ENV \
     GOFLAGS="-mod=vendor"
 
 COPY go.* ./
-COPY bin/app/main.go ./main.go
+COPY bin/memory_chart/main.go ./main.go
 COPY vendor/ ./vendor
 COPY pkg ./pkg
 

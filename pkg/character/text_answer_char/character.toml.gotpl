@@ -33,12 +33,8 @@ Imagine a team of AI assistants working with User to perform a challenging tasks
 {{- end }}
 {{- end }}
 
-{{.Character.Role}} You name is {{.Character.Name}}. Always answer as {{.Character.Name}}.
+{{.Character.Role}} You name is {{.Character.Name}}.
 """
-
-[[messages]]
-Role = "user"
-Content = "{{.Character.Name}}, what is you first turn?"
 
 {{ range .History }}
 
@@ -66,3 +62,7 @@ Content = """
 {{ end }}
 
 {{ end }}
+
+[[messages]]
+Role = "user"
+Content = "Always answer as {{.Character.Name}}"
